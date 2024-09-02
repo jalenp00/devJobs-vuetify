@@ -1,30 +1,56 @@
 <template>
-  <v-toolbar app dense>
-    <v-container fluid>
-      <v-row> 
-        <v-col cols="auto" id="title">
-          <v-btn text :to="{ path: '/' }" justify="space-between">
-            <v-toolbar-title>devJobs</v-toolbar-title>
-          </v-btn>
-        </v-col>
-        <v-col class="d-flex justify-end" cols="auto" id="items">
-          <v-btn text :to="{ path: '/job' }">Job</v-btn>
-          <UserLogin/>
-        </v-col>
-      </v-row>
+   <!-- :style="{ '--toolbar-height': height,
+    '--toolbar-font-size': fontSize}" -->
+  <v-toolbar app
+ 
+  >
+    <v-container  
+    class="d-flex justify-space-between align-center"
+    >
+      <v-btn :to="{ path: '/' }">
+        <v-toolbar-title>devJobs</v-toolbar-title>
+      </v-btn>
+      <div class="d-flex justify-end" :style= "{'font-size': fontSize}"
+      >
+        <About/>
+        <UserLogin/>
+      </div>
     </v-container>
   </v-toolbar>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import UserLogin from '../user/UserLogin.vue';
+import About from '../user/UAbout.vue'
+import { useDisplay } from 'vuetify';
+import { computed } from 'vue';
 
-export default {
-  name: 'NavBar',
-  components: {
-    UserLogin: UserLogin
+const { name } = useDisplay();
+
+const height = computed(() => {
+  console.log(name.value);
+  switch (name.value) {
+    case 'xs': return '8%'
+    case 'sm': return '8%'
+    case 'md': return '8%'
+    case 'lg': return '8%'
+    case 'xl': return '5%'
+    case 'xxl': return '5%'
+    default: return 'auto'
   }
-};
+});
+
+const fontSize = computed(() => {
+  switch (name.value) {
+    case 'xs': return '1.25rem';
+    case 'sm': return '1.25rem';
+    case 'md': return '1.5rem';
+    case 'lg': return '1.5rem';
+    case 'xl': return '1.5rem';
+    case 'xxl': return '1.65rem';
+    default: return '1rem';
+  }
+});
 </script>
 
 <style scoped>
@@ -35,8 +61,5 @@ export default {
 
 .v-toolbar {
   background-color: rgb(78, 78, 78);
-}
-#title {
-  margin-right: 70pc;
 }
 </style>

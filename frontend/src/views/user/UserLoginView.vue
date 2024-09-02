@@ -1,5 +1,5 @@
 <template>
-    <v-container class="pa-4" max-width="xs">
+    <v-container class="pa-4" max-width="xs" @submit.prevent="handleSubmit">
       <v-card>
         <v-card-title>
           <h1>Login</h1>
@@ -13,30 +13,34 @@
                 placeholder="jalenpownell@something.com"
                 prepend-icon="mdi-email"
                 type="email"
-                required
+                :error-messages="errors.email ? [errors.email] : []"
+                @blur="validateField('email')"
             />
             <v-text-field
                 v-model="user.password"
                 label="Password"
                 prepend-icon="mdi-lock"
                 type="password"
-                required
+                :error-messages="errors.password ? [errors.password] : []"
+                @blur="validateField('password')"
             />
             <v-btn
-                @click="submitLogin"
+                @click="handleSubmit()"
                 color="primary"
                 class="mt-4"
-                block
             >
               Log in
             </v-btn>
   
             <v-card-subtitle class="mt-4">
+              <v-label>
+                Dont have an account?
+              </v-label>
               <v-btn
-                text
+                class="hyperlink-text"
                 :to="{ path: '/signup' }"
               >
-                Don't have an account? Sign Up
+                Sign Up
               </v-btn>
             </v-card-subtitle>
           </v-form>
@@ -45,28 +49,78 @@
     </v-container>
   </template>
 
-<script lang="ts">
-    import { defineComponent } from 'vue';
+<script>
+import { defineComponent, ref } from 'vue';
+import { validationSchema } from '../../validations/UserLoginV.js';
 
-    export default defineComponent ({
-        data() {
-            return {
-                user: {
-                    email: '',
-                    password: ''
-                },
-                userDisplay: {
-                    name: 'Enter your full name',
-                    email: 'Enter your email',
-                    password: 'Enter a password'
-                },
-                response: null
-            };
-        },
-        methods : {
-            submitLogin() {
-                //TODO
-            }
-        }
+export default defineComponent({
+  name: 'UserLoginForm',
+
+  setup() {
+    const user = ref({
+      email: '',
+      password: ''
     });
+
+    const errors = ref({
+      email: '',
+      password: ''
+    });
+
+    const isFormValid = ref(false);
+
+    const validateField = async (field) => {
+      try {
+        await validationSchema.validateAt(field, user.value);
+        errors.value[field] = '';
+      } catch (error) {
+        error.inner.forEach(({ path, message}) => {
+          errors.value[path] = message;
+        });
+      }
+    };
+
+    const handleSubmit = async () => {
+      try {
+        await validationSchema.validate(user.value, { abortEarly: false });
+        console.log('Form is valid');
+        // Handle successful form submission
+      } catch (error) {
+        if (error.inner) {
+          error.inner.forEach(({ path, message }) => {
+            errors.value[path] = message;
+          });
+        }
+      }
+    };
+
+    return {
+      user,
+      errors,
+      validateField,
+      handleSubmit
+    };
+  }
+});
 </script>
+
+<style scoped>
+.hyperlink-text {
+  text-decoration: underline;
+  color: #007bff; /* Bootstrap primary color or any color you prefer */
+  padding: 0;
+  min-width: auto;
+  box-shadow: none;
+  background: none;
+  font-size: inherit; /* Ensure font size matches surrounding text */
+  font-weight: normal; /* Ensure font weight matches surrounding text */
+  line-height: 1; /* Remove extra line height */
+}
+
+.hyperlink-text:hover {
+  text-decoration: underline;
+  color: #0056b3; /* Darker color on hover */
+  box-shadow: none;
+  background: none;
+}
+</style>

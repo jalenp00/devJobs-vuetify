@@ -18,6 +18,7 @@
       "webpack-env",
       "vuetify"
     ],
+    
     "paths": {
       "@/*": [
         "src/*"
@@ -35,8 +36,10 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
-, "src/validations/CreateListingV.js", "src/validations/CompanyRegisterV.js"  ],
+    "tests/**/*.tsx", 
+    "src/validations/CreateListingV.js", 
+    "src/validations/CreateCompanyV.js"  
+  ],
   "exclude": [
     "node_modules"
   ]
