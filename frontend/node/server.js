@@ -5,26 +5,25 @@ const axios = require('axios');
 const app = express();
 const port = 3000;
 
+// Import route modules
+const userRoutes = require('./routes/user');
+/*
+const listingRoutes = require('./routes/listing');
+const companyRoutes = require('./routes/company');
+const companyUserRoutes = require('./routes/companyUser');
+*/
 // Middleware for JSON and CORS
 app.use(express.json());
 
 // Allow Vue.js frontend
 app.use(cors({ origin: 'http://localhost:8080' })); 
 
-// Calls backend service
-const API = 'http://localhost:8000'
-
-// Route to proxy requests to FastAPI
-app.post('/job/', async (req, res) => {
-  try {
-    console.log(req.body);
-    const response = await axios.post(API + '/job/', req.body);
-    res.json(response.data);
-    
-  } catch (Error) {
-    res.status(500).json({ error: Error });
-  }
-});
+app.use('/user', userRoutes);
+/*
+app.use('/listing', listingRoutes);
+app.use('/company', companyRoutes);
+app.use('/companyUser', companyUserRoutes);
+*/
 app.listen(port, () => {
   console.log(`Node.js server listening at http://localhost:${port}`);
 });

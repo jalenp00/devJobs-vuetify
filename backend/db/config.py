@@ -1,5 +1,6 @@
+from bson import UuidRepresentation
 from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings 
 import logging
 
 class Settings(BaseSettings):
@@ -18,7 +19,7 @@ settings = Settings()
 logger = logging.getLogger("uvicorn")
 
 try:
-    client = AsyncIOMotorClient(settings.mongodb_url)
+    client = AsyncIOMotorClient(settings.mongodb_url, uuidRepresentation='standard')
     db = client[settings.database_name]
     logging.info(f"Connected to MongoDB at {settings.mongodb_url}")
 except Exception as e:

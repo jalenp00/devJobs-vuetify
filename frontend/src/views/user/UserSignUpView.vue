@@ -7,7 +7,7 @@
         <v-card-subtitle>
           <v-form>
             <v-text-field
-                v-model="user.name"
+                v-model="localUser.name"
                 label="Name"
                 placeholder="Jalen Pownell"
                 type="text"
@@ -15,21 +15,21 @@
                 @blur="validateField('name')"
             />
             <v-text-field
-                v-model="user.email"
+                v-model="localUser.email"
                 label="Email"
                 placeholder="jalenpownell@something.com"
                 prepend-icon="mdi-email"
                 type="email"
-                :error-messages="errors.name ? [errors.email] : []"
+                :error-messages="errors.email ? [errors.email] : []"
                 @blur="validateField('email')"
             />
             
             <v-text-field
-                v-model="user.password"
+                v-model="localUser.password"
                 label="Password"
                 prepend-icon="mdi-lock"
                 type="password"
-                :error-messages="errors.name ? [errors.password] : []"
+                :error-messages="errors.password ? [errors.password] : []"
                 @blur="validateField('password')"
             />
             
@@ -57,57 +57,71 @@
     </v-container>
   </template>
 
-<script>
-import { defineComponent, ref } from 'vue';
-import { validationSchema } from '../../validations/CreateUserV.js'
+<script lang="ts">
+import { defineComponent, ref, watch } from 'vue';
+import validationService from '../../validationService/userVS';
+import UserService from '../../service/UserService';
+import { UserSignUpRequest, UserLoginRequest, UserResponse } from '../../types/user';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'UserSignUpForm',
 
   setup() {
-    const user = ref({
-      name: '',
-      email: '',
-      password: ''
-    });
-
-    const errors = ref({
+    const localUser = ref<UserSignUpRequest>({
       name: '',
       email: '',
       password: ''
     });
 
     const isFormValid = ref(false);
+    const store = useStore();
 
-    const validateField = async (field) => {
-      try {
-        await validationSchema.validateAt(field, user.value);
-        errors.value[field] = '';
-      } catch (error) {
-        errors.value[field] = error.message;
+
+    const validateField = async (field: string) => {
+      if (localUser.value) {
+          validationService.user.value = localUser.value;
+          await validationService.validateSignUpField(field);
       }
     };
     
     const handleSubmit = async () => {
-      try {
-        await validationSchema.validate(user.value, { abortEarly: false });
-        console.log('Form is valid');
-        // Handle successful form submission
-      } catch (error) {
-        if (error.inner) {
-          error.inner.forEach(({ path, message }) => {
-            errors.value[path] = message;
-          });
+      if (localUser !== null) {
+        validationService.user.value = localUser.value;
+        await validationService.validateSignUpSubmit();
+        if (Object.keys(validationService.errors.value).length === 0) {
+          console.log('Form is valid');
+
+          const response = UserService.signUpUser(localUser.value);
+          if (response) {
+            store.commit('setUser', response);
+          } else {
+            console.error('Sign up failed: localUser is not initialized');
+          }
+        } else {
+          console.log('Error validating form: ' + validationService.errors.value);
         }
+      } else {
+        console.error('User is not initialized');
       }
-    };
+      
+    }
+    watch(localUser, (newValue) => {
+      if (newValue !== null) {
+        validationService.user.value = newValue;
+      } else {
+        // Handle the case where newValue is null, if necessary
+        console.error('localUser is null');
+      }
+    });
 
     return {
-      user,
-      errors,
+      localUser,
+      errors: validationService.errors,
       validateField,
       handleSubmit
     };
+  
   }
 });
 </script>

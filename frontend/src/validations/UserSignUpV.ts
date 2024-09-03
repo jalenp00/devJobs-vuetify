@@ -1,11 +1,10 @@
 import * as yup from 'yup';
-
 // Regular expression patterns
 const fullNamePattern = / \S{2,}/;
 const noNumsPattern = /^\D*$/;
 
 // Define the validation schema
-export const validationSchema = yup.object({
+export const validationSignUpSchema = yup.object({
   name: yup.string()
     .required('Name is required')
     .test(
@@ -28,3 +27,5 @@ export const validationSchema = yup.object({
       }
     ),
 });
+
+export default validationSignUpSchema;

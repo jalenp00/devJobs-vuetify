@@ -10,7 +10,8 @@
     "vue": "^3.4.38",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.3",
-    "vuetify": "^3.7.1"
+    "vuetify": "^3.7.1",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@types/node": "^22.5.2",

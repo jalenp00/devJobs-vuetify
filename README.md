@@ -4,6 +4,11 @@
 uvicorn main:app --reload --port 8000
 ```
 
+# command to get into virtual environment (python packages)
+```
+source ~/Desktop/DevJobs/.venv/bin/activate
+```
+
 # command to start mongodb
 ```
 mongosh

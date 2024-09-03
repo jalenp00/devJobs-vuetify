@@ -51,7 +51,8 @@
 
 <script>
 import { defineComponent, ref } from 'vue';
-import { validationSchema } from '../../validations/UserLoginV.js';
+import validationService from '../../validationService/userVS';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'UserLoginForm',
@@ -68,29 +69,42 @@ export default defineComponent({
     });
 
     const isFormValid = ref(false);
+    const store = useStore();
 
     const validateField = async (field) => {
       try {
-        await validationSchema.validateAt(field, user.value);
+        await validationService.validateAt(field, user.value);
         errors.value[field] = '';
       } catch (error) {
-        error.inner.forEach(({ path, message}) => {
-          errors.value[path] = message;
-        });
+        errors.value[field] = error.message;
       }
     };
 
     const handleSubmit = async () => {
       try {
-        await validationSchema.validate(user.value, { abortEarly: false });
+        await validationService.validate(user.value, { abortEarly: false });
         console.log('Form is valid');
-        // Handle successful form submission
+        
+        loginUser();
       } catch (error) {
         if (error.inner) {
           error.inner.forEach(({ path, message }) => {
             errors.value[path] = message;
           });
         }
+      }
+    };
+
+    const loginUser = async () => {
+      try {
+        await axios.post(API + '/user/', user.value);
+
+        // TODO: Save to store and redirect to homepage
+        store.commit('setUser', response.data);
+        console.log(store);
+        
+      } catch (error) {
+        console.log('Error: ' + error);
       }
     };
 

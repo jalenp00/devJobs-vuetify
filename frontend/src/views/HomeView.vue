@@ -17,10 +17,17 @@
 
 <script lang="ts">
 import NavBar from '../components/template/NavBar.vue';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   components: {
     NavBar
+  },
+  setup() {
+    const store = useStore();
+    const user = computed(() => store.state.user);
+    return { user };
   }
 }
 </script>
