@@ -31,16 +31,6 @@ class ListingRequestModel(BaseModel):
         populate_by_name = True
         arbitrary_types_allowed = True
 
-# Holds ids of the job listings
-# Profile holds things like profile picture, settings and preferences
-class UserRequestModel(BaseModel):
-    name: str
-    email: str
-    password: str
-
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
 
 # appliedJobs: holds ids of the listing
 # savedJobs: holds ids of the listing

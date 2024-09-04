@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { date } from 'yup';
 
 export const validationLoginSchema = yup.object({
     email: yup.string().email().required('Email is required'),

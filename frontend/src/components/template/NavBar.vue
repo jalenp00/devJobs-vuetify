@@ -14,6 +14,7 @@
       >
         <About/>
         <UserLogin/>
+        <UserSignOut/>
       </div>
     </v-container>
   </v-toolbar>
@@ -22,6 +23,7 @@
 <script setup lang="ts">
 import UserLogin from '../user/UserLogin.vue';
 import About from '../user/UAbout.vue'
+import UserSignOut from '../user/UserSignOut.vue';
 import { useDisplay } from 'vuetify';
 import { computed } from 'vue';
 

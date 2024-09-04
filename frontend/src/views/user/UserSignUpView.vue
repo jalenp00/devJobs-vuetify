@@ -61,8 +61,10 @@
 import { defineComponent, ref, watch } from 'vue';
 import validationService from '../../validationService/userVS';
 import UserService from '../../service/UserService';
-import { UserSignUpRequest, UserLoginRequest, UserResponse } from '../../types/user';
+import { UserSignUpRequest } from '../../types/user';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import { RefSymbol } from '@vue/reactivity';
 
 export default defineComponent({
   name: 'UserSignUpForm',
@@ -74,41 +76,40 @@ export default defineComponent({
       password: ''
     });
 
-    const isFormValid = ref(false);
     const store = useStore();
-
+    const router = useRouter();
 
     const validateField = async (field: string) => {
       if (localUser.value) {
-          validationService.user.value = localUser.value;
-          await validationService.validateSignUpField(field);
+        validationService.userSignUp.value = localUser.value;
+        await validationService.validateSignUpField(field);
       }
     };
     
     const handleSubmit = async () => {
       if (localUser !== null) {
-        validationService.user.value = localUser.value;
+        validationService.userSignUp.value = localUser.value;
         await validationService.validateSignUpSubmit();
         if (Object.keys(validationService.errors.value).length === 0) {
-          console.log('Form is valid');
-
-          const response = UserService.signUpUser(localUser.value);
+          const response = await UserService.createUser(localUser.value);
           if (response) {
             store.commit('setUser', response);
+            router.push('/');
           } else {
             console.error('Sign up failed: localUser is not initialized');
           }
         } else {
-          console.log('Error validating form: ' + validationService.errors.value);
+          console.log('Error validating form: ' + JSON.stringify(validationService.errors.value));
         }
       } else {
         console.error('User is not initialized');
       }
       
     }
+
     watch(localUser, (newValue) => {
       if (newValue !== null) {
-        validationService.user.value = newValue;
+        validationService.userSignUp.value = newValue;
       } else {
         // Handle the case where newValue is null, if necessary
         console.error('localUser is null');

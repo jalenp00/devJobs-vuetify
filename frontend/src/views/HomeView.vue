@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="homepage-container">
     <v-row align="center" justify="center">
       <v-col cols="12" md="8" class="text-center">
         <v-card outlined>
@@ -8,6 +8,13 @@
           </v-card-title>
           <v-card-subtitle>
             <p>A place to find a new job.</p>
+            <template v-if="user">
+              <v-divider></v-divider>
+              <v-card-text>
+                <p><strong>Name:</strong> {{ user.name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+              </v-card-text>
+            </template>
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -38,11 +45,10 @@ export default {
   font-weight: bold;
 }
 
-.v-container {
-  background-color: rgb(34, 17, 50);
-  min-width: 100pc;
-  max-height: 100pc;
-  padding-left: 0;
-  padding-right: 0;
+.homepage-container {
+  background-color: rgb(53, 51, 55);
+  min-height: 100vh; /* Use viewport height */
+  width: 100vw; /* Use viewport width */
+  padding: 0; /* Adjust padding as needed */
 }
 </style>

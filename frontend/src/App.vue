@@ -13,6 +13,10 @@
 //import Header from './components/template/Header.vue';
 import Footer from './components/template/Footer.vue';
 import NavBar from './components/template/NavBar.vue';
+import Cookies from 'js-cookie';
+import { useStore } from 'vuex';
+import UserService from './service/UserService'
+import { onMounted } from 'vue';
 
 export default {
   name: 'App',
@@ -21,6 +25,25 @@ export default {
     //Header,
     NavBar,
     Footer
+  },
+  setup() {
+    const store = useStore();
+
+    onMounted(async () => {
+      const userId = Cookies.get('userId');
+      const isValidated = Cookies.get('isValidated') === 'true'; // Cookies values are strings
+
+      if (userId && isValidated) {
+        try {
+          const userDetails = await UserService.getUser(userId);
+          store.commit('setUser', userDetails);
+        } catch (err) {
+          console.error('Failed to fetch user details', err);
+        }
+      }
+    });
+
+    return {};
   }
 };
 </script>

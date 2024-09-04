@@ -8,7 +8,7 @@
         <v-card-subtitle>
           <v-form>
             <v-text-field
-                v-model="user.email"
+                v-model="localUser.email"
                 label="Email"
                 placeholder="jalenpownell@something.com"
                 prepend-icon="mdi-email"
@@ -17,7 +17,7 @@
                 @blur="validateField('email')"
             />
             <v-text-field
-                v-model="user.password"
+                v-model="localUser.password"
                 label="Password"
                 prepend-icon="mdi-lock"
                 type="password"
@@ -41,76 +41,75 @@
                 :to="{ path: '/signup' }"
               >
                 Sign Up
-              </v-btn>
-            </v-card-subtitle>
-          </v-form>
-        </v-card-subtitle>
-      </v-card>
-    </v-container>
-  </template>
+            </v-btn>
+          </v-card-subtitle>
+        </v-form>
+      </v-card-subtitle>
+    </v-card>
+  </v-container>
+</template>
 
-<script>
-import { defineComponent, ref } from 'vue';
+<script lang="ts">
+import { UserLoginRequest } from '../../types/user';
+import { defineComponent, ref, watch } from 'vue';
 import validationService from '../../validationService/userVS';
+import UserService from '../../service/UserService';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
 
 export default defineComponent({
   name: 'UserLoginForm',
 
   setup() {
-    const user = ref({
-      email: '',
-      password: ''
-    });
-
-    const errors = ref({
+    const localUser = ref<UserLoginRequest>({
       email: '',
       password: ''
     });
 
     const isFormValid = ref(false);
     const store = useStore();
+    const router = useRouter();
 
-    const validateField = async (field) => {
-      try {
-        await validationService.validateAt(field, user.value);
-        errors.value[field] = '';
-      } catch (error) {
-        errors.value[field] = error.message;
+    const validateField = async (field: string) => {
+      if (localUser.value) {
+        validationService.userLogin.value = localUser.value;
+        await validationService.validateLoginField(field);
       }
     };
 
     const handleSubmit = async () => {
-      try {
-        await validationService.validate(user.value, { abortEarly: false });
-        console.log('Form is valid');
-        
-        loginUser();
-      } catch (error) {
-        if (error.inner) {
-          error.inner.forEach(({ path, message }) => {
-            errors.value[path] = message;
-          });
+      if (localUser !== null) {
+        validationService.userLogin.value = localUser.value;
+        await validationService.validateLoginSubmit();
+        if (Object.keys(validationService.errors.value).length === 0) {
+          const response = await UserService.loginUser(localUser.value);
+          if (response) {
+            store.commit('setUser', response);
+            router.push('/');
+          } else {
+            console.log('Login in service is not working right now.')
+          }
+        } else {
+          console.log('Error validating form: ' + JSON.stringify(validationService.errors.value));
         }
+      } else {
+        console.log('User is empty.');
       }
-    };
+    }
 
-    const loginUser = async () => {
-      try {
-        await axios.post(API + '/user/', user.value);
-
-        // TODO: Save to store and redirect to homepage
-        store.commit('setUser', response.data);
-        console.log(store);
-        
-      } catch (error) {
-        console.log('Error: ' + error);
+    watch(localUser, (newValue) => {
+      if (newValue !== null) {
+        validationService.userLogin.value = newValue;
+      } else {
+        // Handle the case where newValue is null, if necessary
+        console.error('localUser is null');
       }
-    };
+    });
 
     return {
-      user,
-      errors,
+      localUser,
+      errors: validationService.errors,
       validateField,
       handleSubmit
     };
