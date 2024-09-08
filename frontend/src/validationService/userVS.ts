@@ -12,36 +12,31 @@ interface Errors {
 // Declare user and errors refs
 const userSignUp = ref<UserSignUpRequest | null>(null);
 const userLogin = ref<UserLoginRequest | null>(null);
-const errors = ref<Errors>({});
+const signUpErrors = ref<Errors>({});
+const loginErrors = ref<Errors>({});
 
 const validateSignUpField = async (field: string) => {
     if (!userSignUp.value) {
-        errors.value[field] = 'User data is not available';
+        signUpErrors.value[field] = 'User data is not available';
         return;
     }
     try {
+        clearErrorKeyField('signup', field);
         await validationSignUpSchema.validateAt(field, userSignUp.value);
-        // reset errors somehow
-        delete errors.value[field];
     } catch (error) {
-        errors.value[field] = (error as any).message; // Cast error to any for handling
+        signUpErrors.value[field] = (error as any).message; // Cast error to any for handling
     }
 };
 
 const validateSignUpSubmit = async () => {
     try {
+        clearErrorKeys('signup');
         await validationSignUpSchema.validate(userSignUp.value, { abortEarly: false });
-        console.log('Form is valid');
-        
-        // Clear all entries in errors
-        Object.keys(errors.value).forEach(key => {
-            delete errors.value[key];
-        });
         return true;
     } catch (error) {
         if ((error as any).inner) {
             (error as any).inner.forEach(({ path, message }: { path: string, message: string }) => {
-                errors.value[path] = message;
+                signUpErrors.value[path] = message;
             });
         }
     }
@@ -49,34 +44,49 @@ const validateSignUpSubmit = async () => {
 
 const validateLoginField = async (field: string) => {
     if (!userLogin.value) {
-        errors.value[field] = 'User data is not available';
+        loginErrors.value[field] = 'User data is not available';
         return;
     }
     try {
+        clearErrorKeyField('login', field);
         await validationLoginSchema.validateAt(field, userLogin.value);
-        delete errors.value[field];
     } catch (error) {
-        errors.value[field] = (error as any).message; // Cast error to any for handling
+        loginErrors.value[field] = (error as any).message; // Cast error to any for handling
     }
 };
 
 const validateLoginSubmit = async () => {
     try {
+        clearErrorKeys('login');
         await validationLoginSchema.validate(userLogin.value, { abortEarly: false });
-        console.log('Form is valid');
-
-        // Clear all entries in errors
-        Object.keys(errors.value).forEach(key => {
-            delete errors.value[key];
-        });
     } catch (error) {
         if ((error as any).inner) {
             (error as any).inner.forEach(({ path, message }: { path: string, message: string }) => {
-                errors.value[path] = message;
+                loginErrors.value[path] = message;
             });
         }
     }
 };
+
+const clearErrorKeyField = (type: string, field: string) => {
+    if (type == 'login'){
+        delete loginErrors.value[field];
+    } else if (type == 'signup'){
+        delete signUpErrors.value[field];
+    }
+}
+const clearErrorKeys = (type: string) => {
+    if (type == 'login') {
+        Object.keys(loginErrors.value).forEach(key => {
+            delete loginErrors.value[key];
+        });
+    } else if (type == 'signup') {
+        Object.keys(signUpErrors.value).forEach(key => {
+            delete signUpErrors.value[key];
+        });
+    }
+
+}
 
 export default {
     validateSignUpField,
@@ -85,6 +95,7 @@ export default {
     validateLoginSubmit,
     userSignUp,
     userLogin,
-    errors
+    signUpErrors,
+    loginErrors
 };
 

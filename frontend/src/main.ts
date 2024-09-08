@@ -1,7 +1,7 @@
 // Vue
 import { createApp } from 'vue'
 import App from './App.vue'
-import store from './store/user'
+
 //Router
 import router from './router'
 
@@ -12,6 +12,10 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css';
 
+// Stores
+import { UserStore } from './store/userStore'
+import Cookies from 'js-cookie';
+
 const vuetify = createVuetify({
   icons: {
     defaultSet: 'mdi',
@@ -20,8 +24,13 @@ const vuetify = createVuetify({
   directives
 });
 
-createApp(App)
-.use(vuetify)
-.use(router)
-.use(store)
-.mount('#app')
+const app = createApp(App);
+
+app.use(vuetify);
+app.use(router);
+
+app.use(UserStore);
+
+UserStore.dispatch('initializeStore');
+
+app.mount('#app')

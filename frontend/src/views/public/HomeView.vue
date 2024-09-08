@@ -8,13 +8,6 @@
           </v-card-title>
           <v-card-subtitle>
             <p>A place to find a new job.</p>
-            <template v-if="user">
-              <v-divider></v-divider>
-              <v-card-text>
-                <p><strong>Name:</strong> {{ user.name }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-              </v-card-text>
-            </template>
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -23,18 +16,16 @@
 </template>
 
 <script lang="ts">
-import NavBar from '../components/template/NavBar.vue';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import NavBar from '../../components/template/NavBar.vue';
+import { UserResponse } from 'types/user';
 
 export default {
   components: {
     NavBar
   },
   setup() {
-    const store = useStore();
-    const user = computed(() => store.state.user);
-    return { user };
   }
 }
 </script>

@@ -3,22 +3,7 @@ const axios = require('axios');
 const app = express();
 
 // Backend api
-const API = 'http://localhost:8000/user'
-
-// Gets user
-app.get('/', async (req, res) => {
-  try {
-    const id = req.query.id;
-    const response = await axios.get(API + '/', {
-      params: {
-        id
-      }
-    });
-    res.json(response.data);
-  } catch (Error) {
-    res.status(500).json({ error: Error })
-  }
-});
+const API = 'http://localhost:8000/user';
 
 // Create User
 app.post('/', async (req, res) => {
@@ -27,6 +12,21 @@ app.post('/', async (req, res) => {
     res.json(response.data);
   } catch (Error) {
     res.status(500).json({ error: Error });
+  }
+});
+
+// Gets user
+app.get('/', async (req, res) => {
+  try {
+    const { id } = req.query;
+    const response = await axios.get(API + '/', {
+      params: {
+        id: id
+      }
+    });
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: Error })
   }
 });
 

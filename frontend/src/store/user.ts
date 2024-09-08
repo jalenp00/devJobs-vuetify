@@ -1,50 +1,59 @@
-import { createStore } from 'vuex';
+import { Module } from 'vuex';
 import { UserResponse } from 'types/user';
+import UserService from '../service/UserService';
 import Cookies from 'js-cookie';
 
-interface State {
+interface UserState {
   user: UserResponse | null;
 }
 
-const store = createStore<State>({
+const userModule: Module<UserState, null> = {
+  namespaced:true,
   state: {
-    user: null,  // Add your initial state here
+    user: null
   },
   mutations: {
     setUser(state, user: UserResponse) {
-      state.user = user;  // Mutation to update the user state
+      state.user = user;
+      Cookies.set('userId', user.id, { expires: 7, path: '/'});
     },
     clearUser(state) {
-      state.user = null;  // Mutation to clear the user state
+      state.user = null;
+    },
+    clearAll(state) {
+      state.user = null;
+      Cookies.remove('userId');
     }
   },
   actions: {
-    signOut({ commit }) {
-      commit('clearUser');
-    }
-  },
-  plugins: [
-    (store) => {
-      // Subscribe to store changes and save the state to cookies
-      store.subscribe((mutation, state) => {
-        if (mutation.type === 'clearUser') {
-          const cookies = Cookies.get();
-          Object.keys(cookies).forEach(cookie => {
-            Cookies.remove(cookie, { path: '/' });
-          });
-        } else {
-          Cookies.set('store', JSON.stringify(state), { expires: 7, path: '/' }); // Expires in 7 days
+    async fetchUser({ commit }) {
+      console.log('-fetchUser called in user Store Module-');
+      const id = Cookies.get('userId');
+      console.log('userId in fetch user: ' + JSON.stringify(id));
+      if (id) {
+        try {
+          const response = await UserService.getUser(id);
+          console.log('response from getting user from service: ' + JSON.stringify(response));
+          if (response.user) {
+            commit('setUser', response.user);
+          } else {
+            console.log('error returned in user module: ' + JSON.stringify(response.error));
+          }
+        } catch (error) {
+          console.log('Failed to fetch user: ' + JSON.stringify(error));
+          commit('clearUser');
         }
-      });
+      }
+    },
+    login({ commit }, user) {
+      commit('setUser', user);
+      commit('setActiveModule', 'user', { root: true });
+    },
+    signOut({ commit }) {
+      commit('clearAll');
+      commit('setActiveModule', 'guest', { root: true });
     }
-  ]
-});
+  }
+};
 
-// Load state from cookies on store creation
-const savedState = Cookies.get('store');
-
-if (savedState) {
-  store.replaceState(JSON.parse(savedState));
-}
-
-export default store;
+export { userModule, UserState };

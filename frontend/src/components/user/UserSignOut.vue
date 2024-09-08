@@ -18,27 +18,36 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useStore } from 'vuex';
+<script lang="ts">
+import { ref, defineComponent } from 'vue';
+import { mapActions } from 'vuex';
 import { useRouter } from 'vue-router';
-import Cookies from 'js-cookie';
 
-const router = useRouter();
-const store = useStore();
+export default defineComponent ({
+  methods: {
+    ...mapActions('user', ['signOut']),
+    async confirmSignOut() {
+      await this.signOut();
+      this.dialog = false;
+      console.log('signed out user');
+      this.router.push('/');
+    }
+  },
+  setup() {
+    const router = useRouter();
 
-const dialog = ref(false);
+    const dialog = ref(false);
 
-const confirmSignOut = () => {
+    const cancelSignOut = () => {
+      dialog.value = false;
+    };
+    return {
+      router,
+      dialog,
+      cancelSignOut
+    }
+  }
+})
 
-  store.dispatch('signOut').then(() => {
-    console.log('User signed out');
-    dialog.value = false;
-    router.push('/');
-  });
-};
 
-const cancelSignOut = () => {
-  dialog.value = false;
-};
 </script>

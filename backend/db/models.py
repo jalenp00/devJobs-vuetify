@@ -31,27 +31,6 @@ class ListingModel(BaseModel):
         populate_by_name = True
         arbitrary_types_allowed = True
 
-# appliedJobs: holds ids of the listing
-# savedJobs: holds ids of the listing
-# reviews: rating out of 5 - management approval - review - location - job title
-# status: public or private
-# round: funding round
-class CompanyModel(BaseModel):
-    id: UUID = Field(uuid4(), alias="_id")
-    name: str
-    headquarters: str
-    description: str
-    numEmployees: int
-    yearStarted: datetime
-    industry: str
-    type: str
-    locations: Optional[str] = None
-    round: Optional[str] = None
-
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
-
 class CompanyUserModel(BaseModel):
     id: UUID = Field(uuid4(), alias="_id")
     name: str

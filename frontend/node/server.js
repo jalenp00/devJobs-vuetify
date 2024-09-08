@@ -7,10 +7,13 @@ const port = 3000;
 
 // Import route modules
 const userRoutes = require('./routes/user');
-/*
-const listingRoutes = require('./routes/listing');
 const companyRoutes = require('./routes/company');
 const companyUserRoutes = require('./routes/companyUser');
+
+/*
+const listingRoutes = require('./routes/listing');
+
+
 */
 // Middleware for JSON and CORS
 app.use(express.json());
@@ -19,10 +22,13 @@ app.use(express.json());
 app.use(cors({ origin: 'http://localhost:8080' })); 
 
 app.use('/user', userRoutes);
+app.use('/company', companyRoutes);
+app.use('/companyuser', companyUserRoutes);
+
 /*
 app.use('/listing', listingRoutes);
-app.use('/company', companyRoutes);
-app.use('/companyUser', companyUserRoutes);
+
+
 */
 app.listen(port, () => {
   console.log(`Node.js server listening at http://localhost:${port}`);

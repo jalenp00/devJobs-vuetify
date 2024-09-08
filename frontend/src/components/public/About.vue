@@ -1,5 +1,5 @@
 <template>
-    <v-btn text :to="{ path: '/about' }" id="about"
+    <v-btn text="true" :to="{ path: '/about' }" id="about"
     >About</v-btn>
   </template>
   

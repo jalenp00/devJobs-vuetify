@@ -55,17 +55,17 @@
 </template>
 
 <script lang="ts">
-import { UserLoginRequest } from '../../types/user';
+import { CompanyUserLoginRequest } from '../../types/companyUser';
 import { defineComponent, ref, watch, computed } from 'vue';
 import ValidationService from '../../validationService/userVS';
-import UserService from '../../service/UserService';
+import CompanyUserService from '../../service/CompanyUserService';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { RootState } from '../../store/userStore';
 
 
 export default defineComponent({
-  name: 'UserLoginForm',
+  name: 'CompanyUserLoginForm',
 
   setup() {
 
@@ -73,7 +73,7 @@ export default defineComponent({
     const router = useRouter();
 
 
-    const localUser = ref<UserLoginRequest>({
+    const localUser = ref<CompanyUserLoginRequest>({
       email: '',
       password: ''
     });
@@ -99,9 +99,9 @@ export default defineComponent({
         ValidationService.userLogin.value = localUser.value;
         await ValidationService.validateLoginSubmit();
         if (isFormValid) {
-          const response = await UserService.loginUser(localUser.value);
+          const response = await CompanyUserService.loginUser(localUser.value);
           if (response.user) {
-            store.dispatch('user/login', response.user);
+            store.dispatch('companyUser/login', response.user);
             router.push('/');
           } else if (response.error) {
             loginError.value = { message: response.error} || 'An unexpected error occured.';

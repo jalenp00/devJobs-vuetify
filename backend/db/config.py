@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     database_name: str = 'devJobsDB'
     user_collection: str = 'users'
     company_collection: str = 'companies'
+    company_user_collection: str = 'companyusers'
     listing_collection: str = 'listings'
 
     class Config:

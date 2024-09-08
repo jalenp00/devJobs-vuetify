@@ -32,9 +32,13 @@
                 :error-messages="errors.password ? [errors.password] : []"
                 @blur="validateField('password')"
             />
-            
+            <v-alert
+            label="signUpError"
+            v-if="signUpError"
+            type="error"
+            > {{ signUpError.message }}</v-alert>
             <v-btn
-                @click="handleSubmit()"
+                @click="handleSubmit"
                 color="primary"
                 class="mt-4"
                 block
@@ -58,48 +62,57 @@
   </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
-import validationService from '../../validationService/userVS';
+import { defineComponent, ref, watch, computed } from 'vue';
+import ValidationService from '../../validationService/userVS';
 import UserService from '../../service/UserService';
 import { UserSignUpRequest } from '../../types/user';
 import { useStore } from 'vuex';
+import { RootState } from '../../store/userStore';
 import { useRouter } from 'vue-router';
-import { RefSymbol } from '@vue/reactivity';
 
 export default defineComponent({
   name: 'UserSignUpForm',
 
   setup() {
+    const router = useRouter();
+    const store = useStore<RootState>();
+
     const localUser = ref<UserSignUpRequest>({
       name: '',
       email: '',
       password: ''
     });
 
-    const store = useStore();
-    const router = useRouter();
+    const signUpError = ref<{message: string | undefined}>();
+
+    const isFormValid = computed(() => {
+      if (Object.keys(ValidationService.signUpErrors.value).length === 0) {
+        return false;
+      }
+      return true;
+    });
 
     const validateField = async (field: string) => {
       if (localUser.value) {
-        validationService.userSignUp.value = localUser.value;
-        await validationService.validateSignUpField(field);
+        ValidationService.userSignUp.value = localUser.value;
+        await ValidationService.validateSignUpField(field);
       }
     };
     
     const handleSubmit = async () => {
       if (localUser !== null) {
-        validationService.userSignUp.value = localUser.value;
-        await validationService.validateSignUpSubmit();
-        if (Object.keys(validationService.errors.value).length === 0) {
-          const response = await UserService.createUser(localUser.value);
-          if (response) {
-            store.commit('setUser', response);
+        ValidationService.userSignUp.value = localUser.value;
+        await ValidationService.validateSignUpSubmit();
+        if (isFormValid) {
+          const response = await UserService.signUpUser(localUser.value);
+          if (response.user) {
+            store.commit('user/setUser', response.user);
             router.push('/');
           } else {
-            console.error('Sign up failed: localUser is not initialized');
+            signUpError.value = {message: response.message} || 'An unexpected error occured.';
           }
         } else {
-          console.log('Error validating form: ' + JSON.stringify(validationService.errors.value));
+          console.log('Error validating form: ' + JSON.stringify(ValidationService.signUpErrors.value));
         }
       } else {
         console.error('User is not initialized');
@@ -109,7 +122,7 @@ export default defineComponent({
 
     watch(localUser, (newValue) => {
       if (newValue !== null) {
-        validationService.userSignUp.value = newValue;
+        ValidationService.userSignUp.value = newValue;
       } else {
         // Handle the case where newValue is null, if necessary
         console.error('localUser is null');
@@ -118,7 +131,8 @@ export default defineComponent({
 
     return {
       localUser,
-      errors: validationService.errors,
+      errors: ValidationService.signUpErrors,
+      signUpError,
       validateField,
       handleSubmit
     };

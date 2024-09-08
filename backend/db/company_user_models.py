@@ -3,26 +3,24 @@ from typing import List, Optional
 from uuid  import UUID, uuid4
 from datetime import datetime
 
-
-# Holds ids of the job listings
-# Profile holds things like profile picture, settings and preferences
 class Model(BaseModel):
     id: UUID = Field(default_factory=uuid4, alias="id")
+    companyId: UUID
     name: str
     email: str
-    hashed_password: str
+    password: str
     createDate: datetime
-    appliedJobs: Optional[List[UUID]] = []
-    savedJobs: Optional[List[UUID]] = []
-    profile: Optional[dict] = {}
+    position: Optional[str] = None
+    admin: Optional[bool] = None
+    permissions: Optional[dict] = {}
+    settings: Optional[dict] = {}
 
     class Config:
         populate_by_name = True
         arbitrary_types_allowed = True
-        exclude = {"hashed_password"}
 
-# Used for...
 class RequestModel(BaseModel):
+    companyId: str
     name: str
     email: str
     password: str
@@ -31,25 +29,16 @@ class RequestModel(BaseModel):
         populate_by_name = True
         arbitrary_types_allowed = True
 
-
-# Used for...
 class ResponseModel(BaseModel):
-    id: UUID
+    id: str
+    companyId: str
     name: str
     email: str
     createDate: datetime
-    appliedJobs: Optional[List[UUID]] = []
-    savedJobs: Optional[List[UUID]] = []
-    profile: Optional[dict] = {}
-
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
-
-# Used for login
-class RequestLogin(BaseModel):
-    email: str
-    password: str
+    position: Optional[str] = None
+    admin: Optional[bool] = None
+    permissions: Optional[dict] = []
+    settings: Optional[dict] = {}
 
     class Config:
         populate_by_name = True
@@ -61,10 +50,11 @@ class WrapperModel(BaseModel):
 def transform_to_response_model(user: dict) -> ResponseModel:
     return ResponseModel(
         id=str(user.get('_id')),
+        companyId=str(user.get('companyId')),
         name=user.get('name'),
         email=user.get('email'),
         createDate=user.get('createDate'),
-        appliedJobs=user.get('appliedJobs') or [],
-        savedJobs=user.get('savedJobs') or [],
-        profile=user.get('profile') if user.get('profile') is not None else {}
+        position=user.get('position') or None,
+        admin=user.get('admin') or None,
+        permissions=user.get('permissions') if user.get('permissions') is not None else {}
     )
