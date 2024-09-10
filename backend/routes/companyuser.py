@@ -14,7 +14,8 @@ from validation.ErrorModel import ErrorModel
 router = APIRouter()
 
 user_collection = db[settings.company_user_collection]
-logger.info(f"this is how you can log")
+
+#logger.info(f"this is how you can log")
 
 @router.post('/', response_model=Union[WrapperModel, ErrorModel])
 async def create_user(user: RequestModel):
@@ -58,8 +59,6 @@ async def get_user(id: str = Query(...)):
 
     if user_doc is None:
         return ErrorModel(error='No user found')
-    
-    logger.info(f"user_doc: {user_doc}")
 
     # Transform user_doc to ResponseUser for frontend
     response_user = transform_to_response_model(user_doc)
@@ -74,9 +73,7 @@ async def login_user(user: RequestLogin):
     if user_doc is None:
         return ErrorModel(error='No user found')
     
-    result_user = await validLogin(user_doc['email'], user_doc['password'], 'companyuser')
-    
-    logger.info(f"result user in login: {result_user}")
+    result_user = await validLogin(user_doc['email'], user_doc['password'], 'companyuser') 
     
     if isinstance(result_user, ErrorModel):
         return ErrorModel(error=result_user.error)

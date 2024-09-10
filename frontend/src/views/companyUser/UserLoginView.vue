@@ -102,7 +102,7 @@ export default defineComponent({
           const response = await CompanyUserService.loginUser(localUser.value);
           if (response.user) {
             store.dispatch('companyUser/login', response.user);
-            router.push('/');
+            router.push('/company-dashboard');
           } else if (response.error) {
             loginError.value = { message: response.error} || 'An unexpected error occured.';
           }

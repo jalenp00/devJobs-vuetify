@@ -3,9 +3,9 @@ import axios from 'axios';
 const app = express();
 
 // Backend api
-const API = 'http://localhost:8000/user';
+const API = 'http://localhost:8000/listing';
 
-// Create User
+// Create Listing
 app.post('/', async (req, res) => {
   try {
     const response = await axios.post(API + '/', req.body);
@@ -15,28 +15,17 @@ app.post('/', async (req, res) => {
   }
 });
 
-// Gets user
-app.get('/', async (req, res) => {
+app.get('/companyId', async (req, res) => {
   try {
     const { id } = req.query;
-    const response = await axios.get(API + '/', {
+    const response = await axios.get(API + '/companyId', {
       params: {
         id: id
       }
     });
     res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: Error })
-  }
-});
-
-// Login User
-app.post('/login', async (req, res) => {
-  try {
-    const response = await axios.post(API + '/login', req.body);
-    res.json(response.data);
   } catch (Error) {
-    res.status(500).json({error: Error});
+    res.status(500).json({ error: Error});
   }
 });
 

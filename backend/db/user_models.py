@@ -34,7 +34,7 @@ class RequestModel(BaseModel):
 
 # Used for...
 class ResponseModel(BaseModel):
-    id: UUID
+    id: str #changed from UUID to str, may cause issues
     name: str
     email: str
     createDate: datetime

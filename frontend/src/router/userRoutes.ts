@@ -1,12 +1,12 @@
-import UserSignOut from '../views/user/UserSignOutView.vue';
+import GetStartedView from "views/general/GetStartedView.vue";
 
 const userRoutes = [
     {
-      path: '/signout',
-      name: 'signout',
-      component: UserSignOut,
+      path: '/something',
+      name: 'something',
+      component: GetStartedView,
       meta: { requiresAuth: true, userType: 'user'}
-    }
+    } 
 ];
 
 export default userRoutes;

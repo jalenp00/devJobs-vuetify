@@ -1,7 +1,7 @@
 // src/validationSchema.js
 import * as yup from 'yup';
 
-export const validationSchema = yup.object({
+export const validationListingSchema = yup.object({
     title: yup.string().required('Title is required'),
     location: yup.string()
     .required('Location is required')
@@ -12,10 +12,12 @@ export const validationSchema = yup.object({
     salary: yup.number().required('Salary is required').positive('Salary must be positive'),
     description: yup.string().required('Description is required'),
     techStack: yup.string().required('Tech stack is required'),
-    yearsNeeded: yup.string()
+    yearsNeeded: yup.number()
     .required('Years needed is required')
     .min(0, 'Years of experience must be 0 or more')
-    .max('Years of expirence must be less than 10'),
+    .max(10, 'Years of expirence must be less than 10'),
+    contract: yup.boolean()
+    .required('Please specify if this is a contracted position or not'),
     remote: yup.boolean(),
     hybrid: yup.boolean(),
     daysInOffice: yup.number()
@@ -28,3 +30,5 @@ export const validationSchema = yup.object({
     daysExpire: yup.number(),
     numAppExpire: yup.number()
   });
+
+  export default validationListingSchema;

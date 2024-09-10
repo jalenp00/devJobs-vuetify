@@ -1,8 +1,7 @@
-import { defineComponent, ref } from 'vue';
+import { ref } from 'vue';
 import { validationSignUpSchema } from '../validations/UserSignUpV';
 import { validationLoginSchema } from '../validations/UserLoginV';
 import { UserSignUpRequest, UserLoginRequest } from 'types/user';
-import { RefSymbol } from '@vue/reactivity';
 
 
 interface Errors {

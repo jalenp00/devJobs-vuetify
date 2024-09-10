@@ -14,6 +14,7 @@ export interface CompanyUserLoginRequest {
 
 // Interface for User Sign-Up Response
 export interface CompanyUserResponse {
+    companyId: string;
     name: string;
     email: string;
     id: string;

@@ -1,6 +1,20 @@
 <template>
     <v-container class="pa-4" max-width="xs" @submit.prevent="handleSubmit">
       <v-card>
+        <v-row justify="center" class="mb-4">
+            <v-col cols="auto">
+                <v-btn text="true" small variant="text"
+                :color="selectedButton === 'user' ? 'primary' : 'default'"
+                @click="selectButton('user')"
+                >User</v-btn>
+            </v-col>
+            <v-col cols="auto">
+                <v-btn text="true" small variant="text"
+                :color="selectedButton === 'companyUser' ? 'primary' : 'default'"
+                @click="selectButton('companyUser')"
+                >Company User</v-btn>
+            </v-col>
+        </v-row>
         <v-card-title>
           <h1>Login</h1>
         </v-card-title>
@@ -43,7 +57,18 @@
               </v-label>
               <v-btn
                 class="hyperlink-text"
-                :to="{ path: '/signup' }"
+                :to="{ path: '/user-signup' }"
+              >
+                Sign Up
+            </v-btn>
+          </v-card-subtitle>
+          <v-card-subtitle class="mt-4">
+              <v-label>
+                Want to register a company?
+              </v-label>
+              <v-btn
+                class="hyperlink-text"
+                :to="{ path: '/company-signup' }"
               >
                 Sign Up
             </v-btn>
@@ -62,6 +87,8 @@ import UserService from '../../service/UserService';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { RootState } from '../../store/userStore';
+import CompanyUserService from '../../service/CompanyUserService';
+
 
 
 export default defineComponent({
@@ -72,6 +99,10 @@ export default defineComponent({
     const store = useStore<RootState>();
     const router = useRouter();
 
+    const selectedButton = ref('user');
+    const selectButton = (button: string) => {
+            selectedButton.value = button;
+    };
 
     const localUser = ref<UserLoginRequest>({
       email: '',
@@ -99,13 +130,18 @@ export default defineComponent({
         ValidationService.userLogin.value = localUser.value;
         await ValidationService.validateLoginSubmit();
         if (isFormValid) {
-          const response = await UserService.loginUser(localUser.value);
-          if (response.user) {
-            store.dispatch('user/login', response.user);
-            router.push('/');
-          } else if (response.error) {
-            loginError.value = { message: response.error} || 'An unexpected error occured.';
-          }
+            let response = null;
+            if (selectedButton.value === 'user') {
+                response = await UserService.loginUser(localUser.value);
+            } else {
+                response = await CompanyUserService.loginUser(localUser.value);
+            }
+            if (response.error) {
+                loginError.value = { message: response.error} || 'An unexpected error occured.';
+            } else {
+                store.dispatch(selectedButton + '/login', response.user);
+                router.push('/' + selectedButton + '-dashboard');
+            } 
         } else {
           console.log('Error validating form: ' + JSON.stringify(ValidationService.loginErrors.value));
         }
@@ -130,6 +166,8 @@ export default defineComponent({
       loginError,
       isFormValid,
       validateField,
+      selectButton,
+      selectedButton,
       handleSubmit
     };
   

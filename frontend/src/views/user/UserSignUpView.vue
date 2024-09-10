@@ -45,12 +45,11 @@
             >
               Log in
             </v-btn>
-  
             <v-card-subtitle class="mt-4">
               <v-label>Have an account?</v-label>
               <v-btn
                 class="hyperlink-text"
-                :to="{ path: '/login' }"
+                :to="{ path: '/get-started' }"
               >
                 Login
               </v-btn>

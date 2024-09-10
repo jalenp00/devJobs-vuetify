@@ -2,8 +2,9 @@ import HomeView from '../views/public/HomeView.vue';
 import AboutView from '../views/public/AboutView.vue';
 import UserLoginView from '../views/user/UserLoginView.vue';
 import UserSignupView from '../views/user/UserSignUpView.vue';
-import companyUserLogin from '../views/companyUser/UserLoginView.vue';
-
+import CompanyUserLogin from '../views/companyUser/UserLoginView.vue';
+import SingleListingView from '../views/listing/SingleListing.vue';
+import GetStartedView from '../views/general/GetStartedView.vue';
 const publicRoutes = [
     {
       path: '/',
@@ -18,11 +19,18 @@ const publicRoutes = [
         meta: { requiresAuth: false, userType: 'guest'}
     },
     {
-      path: '/signup',
+      path: '/get-started',
+      name: 'get-started',
+      component: GetStartedView,
+      meta: { requiresAuth: false, userType: 'guest'}
+    },
+    {
+      path: '/user-signup',
       name: 'signup',
       component: UserSignupView,
       meta: { requiresAuth: false, userType: 'guest'}
     },
+    /*
     {
       path: '/login',
       name: 'login',
@@ -32,8 +40,15 @@ const publicRoutes = [
     {
       path: '/cu-login',
       name: 'cu-login',
-      component: companyUserLogin,
+      component: CompanyUserLogin,
       meta: { requiresAuth: false, userType: 'guest'}
+    },
+    */
+    {
+      path: '/listing',
+      name: 'listing',
+      component: SingleListingView,
+      meta: { requiresAuth: false, userType: 'all'}
     }
 ];
 

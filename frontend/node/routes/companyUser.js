@@ -1,5 +1,5 @@
-const express = require('express');
-const axios = require('axios');
+import express from 'express';
+import axios from 'axios';
 const app = express();
 
 const API = 'http://localhost:8000/companyuser';
@@ -38,4 +38,4 @@ app.post('/login', async (req, res) => {
     }
 });
 
-module.exports = app;
+export default app;

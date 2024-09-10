@@ -5,24 +5,17 @@
     <v-container  
     class="d-flex justify-space-between align-center"
     >
-      <v-btn :to="{ path: '/' }">
-        <v-toolbar-title>devJobs</v-toolbar-title>
-      </v-btn>
+      <LogoButton :activeModule="activeModule"/>
       <v-divider class="d-flex justify-end" 
       :style= "{'font-size': fontSize}"
       >
         <v-divider v-if="activeModule === 'guest'">
           <About/>
-          <UserLogin/>
-          <UserSignUp/>
-          <CompanyRegister/>
-          <CompanyUserLogin/>
+          <GetStartedButton :activeModule="activeModule" />
         </v-divider>
-        <v-divider v-else-if="activeModule === 'user'">
-          <UserSignOut/>
-        </v-divider>
-        <v-divider v-if="activeModule === 'companyUser'">
-          <CompanyUserSignOut/>
+        <v-divider v-else>
+          <CreateListing :activeModule="activeModule"/>
+          <SignOutButton :activeModule="activeModule"/>
         </v-divider>
       </v-divider>
     </v-container>
@@ -31,12 +24,17 @@
 
 <script lang="ts">
 import UserLogin from '../user/UserLogin.vue';
-import About from '../public/About.vue'
-import UserSignOut from '../user/UserSignOut.vue';
-import CompanyUserSignOut from '../companyuser/UserSignOut.vue';
+import About from '../public/About.vue';
 import UserSignUp from '../user/UserSignUp.vue';
 import CompanyRegister from '../company/companyRegister.vue';
 import CompanyUserLogin from '../companyuser/UserLogin.vue';
+
+import LogoButton from '../buttons/LogoButton.vue';
+import SignOutButton from '../buttons/SignOutButton.vue';
+import CreateListing from '../listing/CreateListing.vue';
+import SignUpButton from '../buttons/SignUpButton.vue';
+import GetStartedButton from '../buttons/GetStartedButton.vue';
+
 import { useDisplay } from 'vuetify';
 import { computed, ref, watch, defineComponent } from 'vue';
 import { mapState } from 'vuex';
@@ -44,13 +42,11 @@ import { mapState } from 'vuex';
 export default defineComponent({
   name: 'NavBar',
   components: {
-    UserLogin,
+    LogoButton,
     About,
-    UserSignOut,
-    UserSignUp,
-    CompanyRegister,
-    CompanyUserLogin,
-    CompanyUserSignOut
+    SignOutButton,
+    GetStartedButton,
+    CreateListing
   },
   computed: {
     ...mapState(['activeModule'])

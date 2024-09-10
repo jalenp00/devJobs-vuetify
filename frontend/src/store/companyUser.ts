@@ -33,17 +33,15 @@ const companyUserModule: Module<CompanyUserState, null> = {
     async fetchUser({ commit }) {
       console.log('-fetchUser called in companyUser Store Module-');
       const id = Cookies.get('companyUserId');
-      console.log('companyUserId in fetch user: ' + JSON.stringify(id));
       if (id) {
         try {
           const response = await CompanyUserService.getUser(id);
-          console.log('response from getting user from service: ' + JSON.stringify(response));
+
           if (response.user) {
             commit('setUser', response.user);
           } else {
             console.log('error in companyUser Module: ' + response.errror);
           }
-          
         } catch (error) {
           console.log('Failed to fetch user: ' + JSON.stringify(error));
           commit('clearUser');
@@ -54,9 +52,14 @@ const companyUserModule: Module<CompanyUserState, null> = {
       commit('setUser', user);
       commit('setActiveModule', 'companyUser', { root: true });
     },
-    signOut({ commit }) {
+    signout({ commit }) {
       commit('clearAll');
       commit('setActiveModule', 'guest', { root: true });
+    }
+  },
+  getters: {
+    getCompanyId(state) {
+      return state.user?.companyId;
     }
   }
 };

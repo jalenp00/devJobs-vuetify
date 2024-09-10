@@ -49,7 +49,7 @@ async def create_user(user: RequestModel):
 
 @router.get('/', response_model=Union[WrapperModel, ErrorModel])
 async def get_user(id: str = Query(...)):
-    logger.info(f"Unprocessable Entity: {id}")
+    
     # Convert id into UUID into hex to query
     uuid_id = UUID(id)
     

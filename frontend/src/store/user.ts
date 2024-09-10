@@ -49,7 +49,7 @@ const userModule: Module<UserState, null> = {
       commit('setUser', user);
       commit('setActiveModule', 'user', { root: true });
     },
-    signOut({ commit }) {
+    signout({ commit }) {
       commit('clearAll');
       commit('setActiveModule', 'guest', { root: true });
     }

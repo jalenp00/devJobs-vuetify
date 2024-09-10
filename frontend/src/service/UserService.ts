@@ -1,8 +1,6 @@
-import { defineComponent, ref } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
-import { UserSignUpRequest, UserLoginRequest, UserResponse } from 'types/user';
-import { useStore } from 'vuex';
-import { setErrors } from '@formkit/vue';
+import { UserSignUpRequest, UserLoginRequest } from 'types/user';
 
 // Node proxy server
 const API = 'http://localhost:3000/user';
